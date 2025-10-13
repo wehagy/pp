@@ -1,7 +1,20 @@
-specfile_path: protonplus.spec
+---
+#specfile_path: protonplus.spec
+
+upstream_package_name: ProtonPlus
+downstream_package_name: protonplus
+
+actions:
+  #post-upstream-clone:
+  #  - bash -c "spectool -g *.spec"
+  fix-spec-file:
+    - sh -c "spectool --get-files --force *.spec"
 
 jobs:
 - job: copr_build
   trigger: pull_request
+  owner: wehagy
+  project: test
   targets:
     - fedora-stable
+    - fedora-rawhide
