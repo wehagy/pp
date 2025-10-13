@@ -1,0 +1,49 @@
+---
+upstream_package_name: ProtonPlus
+downstream_package_name: protonplus
+
+update_release: false
+
+upstream_tag_template: protonplus-{version}-1
+
+srpm_build_deps:
+  - rpmautospec
+
+actions:
+  post-upstream-clone:
+    - bash -c "rpmautospec process-distgit {*,*}.spec"
+  create-archive:
+    - bash -c "spectool --get-files --force *.spec"
+    - bash -c "sha256sum -c CHECKSUM"
+    - bash -c "echo *.tar.gz"
+  post-modifications:
+    - bash -c "sed -i '0,/protonplus/ s//protonplus-next/' *.spec"
+    - bash -c "sed -i 's/%{name}/protonplus/g' *.spec"
+
+jobs:
+  - job: copr_build
+    trigger: pull_request
+    owner: wehagy
+    project: test
+    list_on_homepage: true
+    identifier: protonplus-next
+    targets:
+      - fedora-all
+    notifications:
+      pull_request:
+        successful_build: true
+      failure_comment:
+        message: |
+          One of the tests failed for {commit_sha}:
+          - Check logs {logs_url}.
+          - Packit dashboard {packit_dashboard_url}.
+          - Copr dashboard {external_dashboard_url}.
+
+  - job: copr_build
+    trigger: release
+    owner: wehagy
+    project: test
+    list_on_homepage: true
+    identifier: protonplus
+    targets:
+      - fedora-all
