@@ -14,5 +14,6 @@ jobs:
   owner: wehagy
   project: test
   targets:
+    - fedora-43
     - fedora-stable
     - fedora-rawhide
