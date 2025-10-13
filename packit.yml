@@ -1,0 +1,7 @@
+specfile_path: protonplus.spec
+
+jobs:
+- job: copr_build
+  trigger: pull_request
+  targets:
+    - fedora-stable
