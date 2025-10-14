@@ -1,38 +1,44 @@
 ---
 actions: &common_actions
   post-upstream-clone:
-    - bash -c "rpmautospec process-distgit {*,*}.spec"
+    - bash -c "rpmautospec process-distgit ${PACKIT_SPECFILE_PATH} ${PACKIT_SPECFILE_PATH}"
+  get-current-version:
+    - bash -c "grep -oP '^%global\s+tag\s+v\K.*' ${PACKIT_SPECFILE_PATH}"
   create-archive:
-    - bash -c "spectool --get-files --force *.spec"
+    - bash -c "spectool --get-files ${PACKIT_SPECFILE_PATH}"
     - bash -c "sha256sum -c CHECKSUM"
-    - bash -c "echo *.tar.gz"
+    - bash -c "echo ${PACKIT_PROJECT_NAME_VERSION}.tar.gz"
+
+upstream_tag_template: protonplus-{version}
 
 packages:
   protonplus:
+    upstream_package_name: ProtonPlus
     downstream_package_name: protonplus
     update_release: false
-  protonplus-next:
-    downstream_package_name: protonplus-next
-    #release_suffix: {original_release_number}.{current_time}.{sanitized_current_branch}{git_desc_suffix}
     actions:
       <<: *common_actions
-      post-upstream-clone:
-        - bash -c "rpmautospec process-distgit {*,*}.spec"
-        - bash -c "mv protonplus.spec protonplus-next.spec"
-      post-modifications:
-        - bash -c "sed -i '0,/protonplus/ s//protonplus-next/' *.spec"
-        - bash -c "sed -i 's/%{name}/protonplus/g' *.spec"
-
-upstream_package_name: ProtonPlus
-
-upstream_tag_template: protonplus-{version}
+      fix-spec-file:
+        - "true"
+  protonplus-stg:
+    upstream_package_name: ProtonPlus
+    downstream_package_name: protonplus
+    update_release: false
+    actions:
+      <<: *common_actions
+      fix-spec-file:
+        - "true"
+  protonplus-dev:
+    upstream_package_name: ProtonPlus
+    downstream_package_name: protonplus
+    actions:
+      <<: *common_actions
 
 srpm_build_deps:
   - rpmautospec
 
 jobs:
-  - &common_job
-    job: copr_build
+  - job: copr_build
     owner: wehagy
     project: test
     list_on_homepage: true
@@ -43,11 +49,24 @@ jobs:
     packages:
       - protonplus
 
-  - <<: *common_job
-    trigger: pull_request
-    identifier: protonplus-next
+  - job: copr_build
+    owner: wehagy
+    project: test
+    list_on_homepage: true
+    targets:
+      - fedora-all
+    trigger: commit
+    identifier: protonplus-stg
     packages:
-      - protonplus-next
+      - protonplus-stg
+
+  - job: copr_build
+    targets:
+      - fedora-all
+    trigger: pull_request
+    identifier: protonplus-dev
+    packages:
+      - protonplus-dev
     notifications:
       pull_request:
         successful_build: true
