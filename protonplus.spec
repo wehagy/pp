@@ -3,7 +3,7 @@
 # SPDX-Comment: See LICENSE for the full license text
 
 ##### Variable macros
-%global tag                 v0.5.16
+%global tag                 v0.5.19
 # BuildRequires dependencies
 %global meson_version       1.0.0
 %global libadwaita_version  1.6
@@ -55,40 +55,8 @@ Requires:       hicolor-icon-theme
 
 
 %description
-Features:
- - Manage supported compatibility tools across supported launchers
- - Change the compatibility tool and launch options of your Steam games
- - And much more...
-
-Supported launchers:
- - Steam
- - Lutris
- - Heroic Games Launcher
- - Bottles
- - WineZGUI
-
-Supported compatibility tools:
- - Steam Tinker Launch
- - Proton-GE
- - Luxtorpeda
- - Boxtron
- - Roberta
- - NorthstarProton
- - Proton-GE RTSP
- - Proton CachyOS
- - Proton EM
- - Proton Tkg
- - Proton Sarek
- - Kron4ek Wine-Builds Proton
- - Kron4ek Wine-Builds Vanilla
- - Kron4ek Wine-Builds Staging
- - Kron4ek Wine-Builds Staging-Tkg
- - DXVK
- - DXVK (Sarek)
- - DXVK Async (Sarek)
- - DXVK GPL+Async (Ph42oN)
- - VKD3D-Lutris
- - VKD3D-Proton
+ProtonPlus allows you to easily manage and update various compatibility tools
+like Proton, Wine, DXVK, and VKD3D across different launchers.
 
 %prep
 %forgeautosetup
