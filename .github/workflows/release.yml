@@ -5,7 +5,8 @@ on:
   # Allows manual workflow run (must in default branch to work)
   workflow_dispatch:
   release:
-    types: [published]
+    types: 
+      - published
 
 env:
   DNF_CMD: >
@@ -22,8 +23,8 @@ jobs:
       image: fedora:latest
 
     steps:
-      - name: Check out
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |

@@ -1,36 +1,33 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# SPDX-FileCopyrightText: 2023-2025 Wesley Gimenes <wehagy@proton.me>
+# SPDX-FileCopyrightText: 2023-2026 Wesley Gimenes <wehagy@proton.me>
 # SPDX-Comment: See LICENSE for the full license text
 
-##### Variable macros
-%global tag                 v0.5.20
+# ===== Variables =====
 # BuildRequires dependencies
 %global meson_version       1.0.0
 %global libadwaita_version  1.6
 
-##### Constant macros
+# ===== Constants =====
 %global app_id              com.vysp3r.ProtonPlus
-%global forgeurl            https://github.com/vysp3r/ProtonPlus
-# forgemeta macro need to be after forgeurl and tag macros
-%forgemeta
-# unset weird prefix set by forgemeta (.gitvX.X.X)
-%undefine distprefix
+%global forgeurl0           https://github.com/vysp3r/ProtonPlus
 
 
 Name:           protonplus
-Version:        %{fileref}
+Version:        0.5.20
 Release:        %autorelease
 Summary:        A modern compatibility tools manager
 ExclusiveArch:  x86_64
 
+%forgemeta
+
 License:        GPL-3.0-or-later
 URL:            https://protonplus.vysp3r.com
 Source0:        %{forgesource}
-# license of the spec file
+# license of the spec
 Source1:        LICENSE
 Source2:        %{name}.rpmlintrc
 
-##### Build dependencies
+# ===== Build dependencies =====
 BuildRequires:  gettext
 BuildRequires:  meson >= %{meson_version}
 BuildRequires:  vala
@@ -43,14 +40,15 @@ BuildRequires:  pkgconfig(libadwaita-1) >= %{libadwaita_version}
 BuildRequires:  pkgconfig(libarchive)
 BuildRequires:  pkgconfig(libsoup-3.0)
 
-##### Check dependencies
-# desktop-file-validate command
+# ----- Check dependencies -----
+# command desktop-file-validate
 BuildRequires:  desktop-file-utils
-# appstream-util command
+# command appstream-util
 BuildRequires:  libappstream-glib
 
-##### Runtime dependencies
-# fix: Directories without known owners: /usr/share/icons/hicolor/*
+# ----- Runtime dependencies -----
+# fix the fedora-review error
+# Directories without known owners: /usr/share/icons/hicolor/*
 Requires:       hicolor-icon-theme
 
 
@@ -67,14 +65,14 @@ like Proton, Wine, DXVK, and VKD3D across different launchers.
 
 %install
 %meson_install
-%find_lang %{app_id}
+%find_lang %app_id
 
 %check
 %meson_test
 
 %files -f %{app_id}.lang
 %license LICENSE.md
-%doc README.md CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md
+%doc CODE_OF_CONDUCT.md CONTRIBUTING.md README.md SECURITY.md
 %{_bindir}/%{name}
 %{_datadir}/applications/%{app_id}.desktop
 %{_datadir}/glib-2.0/schemas/%{app_id}.gschema.xml
