@@ -1,0 +1,20 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+	"config:best-practices",
+	":automergeStableNonMajor",
+	":automergeDigest",
+	":automergeBranch",
+  ],
+  "commitBodyTable": true,
+  "commitBody": "[skip changelog]\n\nSigned-off-by: {{{gitAuthor}}}",
+  "packageRules": [
+    {
+      "matchDatasources": [
+		"docker"
+	  ],
+      "matchPackagePatterns": ["^fedora$"],
+      "enabled": false
+    }
+  ],
+}
