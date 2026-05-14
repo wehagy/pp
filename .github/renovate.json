@@ -1,0 +1,17 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+	":gitSignOff"
+  ],
+  "pinDigests": true,
+  "packageRules": [
+    {
+      "matchDatasources": ["docker"],
+      "matchPackagePatterns": ["^fedora$"],
+      "enabled": false
+    }
+  ],
+  "commitBody": "[skip changelog]",
+  "commitBodyTable": true
+}
