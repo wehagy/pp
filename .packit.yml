@@ -1,0 +1,80 @@
+---
+_:
+  actions: &actions_base
+    post-upstream-clone:
+      - bash -c "rpmautospec process-distgit ${PACKIT_SPECFILE_PATH} ${PACKIT_SPECFILE_PATH}"
+    get-current-version:
+      - bash -c "grep -oP '^%global\s+tag\s+v\K.*' ${PACKIT_SPECFILE_PATH}"
+    create-archive:
+      - bash -c "spectool --get-files ${PACKIT_SPECFILE_PATH}"
+      - bash -c "sha256sum -c CHECKSUM"
+      - bash -c "echo ${PACKIT_PROJECT_NAME_VERSION}.tar.gz"
+  
+  pkg_base: &pkg_base
+    upstream_package_name: ProtonPlus
+    downstream_package_name: protonplus
+    actions: *actions_base
+
+  fix_spec: &fix_spec
+    fix-spec-file:
+      - "true"
+
+  job_base: &job_base
+    job: copr_build
+    targets:
+      - fedora-all
+
+upstream_tag_template: protonplus-{version}
+
+srpm_build_deps:
+  - rpmautospec
+
+packages:
+  protonplus:
+    <<: *pkg_base
+    update_release: false
+    actions:
+      <<: [*actions_base, *fix_spec]
+
+  protonplus-stg:
+    <<: *pkg_base
+    update_release: false
+    actions:
+      <<: [*actions_base, *fix_spec]
+
+  protonplus-dev:
+    <<: *pkg_base
+
+jobs:
+  - <<: *job_base
+    owner: wehagy
+    project: test
+    list_on_homepage: true
+    trigger: release
+    identifier: protonplus
+    packages:
+      - protonplus
+
+  - <<: *job_base
+    owner: wehagy
+    project: test
+    list_on_homepage: true
+    trigger: commit
+    identifier: protonplus-stg
+    packages:
+      - protonplus-stg
+
+  - <<: *job_base
+    trigger: pull_request
+    identifier: protonplus-dev
+    packages:
+      - protonplus-dev
+    notifications:
+      pull_request:
+        successful_build: true
+      failure_comment:
+        message: |
+          One of the tests failed for {commit_sha}:
+          - Check logs {logs_url}.
+          - Packit dashboard {packit_dashboard_url}.
+          - Copr dashboard {external_dashboard_url}.
