@@ -17,48 +17,9 @@ env:
       --setopt=install_weak_deps=False
 
 jobs:
-  build-srpm:
-    name: Build source RPM
+  build-packages:
+    name: Build SRPM and RPM
     runs-on: ubuntu-24.04
-    container: 
-      image: fedora:latest
-
-    steps:
-      - name: Install dependencies
-        run: |
-          # install git to actions/checkout proper work
-          ${DNF_CMD} \
-            git \
-            make
-          # add workdir to safe dir
-          git config \
-            --global \
-            --add safe.directory "${GITHUB_WORKSPACE}"
-
-      - name: Check out
-        uses: actions/checkout@v4
-        with:
-          # fetch all history to make changelog
-          fetch-depth: 0
-
-
-      - name: Build the source RPM
-        run: |
-          make srpm
-
-      - name: Upload source RPM to github artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: SRPM
-          include-hidden-files: true
-          retention-days: 1
-          path: ${{ github.workspace }}
-      
-  build-rpm:
-    name: Build RPM
-    runs-on: ubuntu-24.04
-    needs:
-      - build-srpm
     container: 
       image: fedora:latest
       volumes:
@@ -68,26 +29,33 @@ jobs:
       options: --privileged
 
     steps:
-      - name: Download source RPM from github artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: SRPM
-
       - name: Install dependencies
         run: |
           ${DNF_CMD} \
+            git \
             make
-      
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # fetch all history to make changelog
+          fetch-depth: 0
+
+      - name: Build the SRPM
+        run: |
+          make srpm
+
       - name: Build the RPM
         run: |
           make rpm
 
-      - name: Upload source RPM to github artifacts
+      - name: Upload SRPM and RPM
         uses: actions/upload-artifact@v4
         with:
-          name: RPM
-          retention-days: 1
-          path: ${{ github.workspace }}/output/rpm
+          name: srpm-rpm
+          retention-days: 7
+          path: |
+            ${{ github.workspace }}/output/
 
 #  upload-srpm:
 #    name: Upload source RPM to Fedora Copr
