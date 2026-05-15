@@ -17,48 +17,9 @@ env:
       --setopt=install_weak_deps=False
 
 jobs:
-  build-srpm:
-    name: Build source RPM
+  build-packages:
+    name: Build SRPM and RPM
     runs-on: ubuntu-24.04
-    container: 
-      image: fedora:latest
-
-    steps:
-      - name: Install dependencies
-        run: |
-          # install git to actions/checkout proper work
-          ${DNF_CMD} \
-            git \
-            make
-          # add workdir to safe dir
-          git config \
-            --global \
-            --add safe.directory "${GITHUB_WORKSPACE}"
-
-      - name: Check out
-        uses: actions/checkout@v4
-        with:
-          # fetch all history to make changelog
-          fetch-depth: 0
-
-
-      - name: Build the source RPM
-        run: |
-          make srpm
-
-      - name: Upload source RPM to github artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: SRPM
-          include-hidden-files: true
-          retention-days: 1
-          path: ${{ github.workspace }}
-      
-  build-rpm:
-    name: Build RPM
-    runs-on: ubuntu-24.04
-    needs:
-      - build-srpm
     container: 
       image: fedora:latest
       volumes:
@@ -68,26 +29,103 @@ jobs:
       options: --privileged
 
     steps:
-      - name: Download source RPM from github artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: SRPM
-
       - name: Install dependencies
         run: |
           ${DNF_CMD} \
+            git \
             make
-      
+
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          # fetch all history to make changelog
+          fetch-depth: 0
+
+      - name: Build the SRPM
+        run: |
+          make srpm
+          mv output/srpm/build.{log,srpm.log.txt}
+
+      - name: Upload SRPM build log
+        uses: actions/upload-artifact@v7
+        with:
+          retention-days: 30
+          archive: false
+          path: |
+            output/srpm/build.srpm.log.txt
+
+      - name: Upload SRPM
+        uses: actions/upload-artifact@v7
+        with:
+          name: srpm
+          retention-days: 30
+          path: |
+            output/srpm
+
       - name: Build the RPM
         run: |
           make rpm
+          mv output/rpm/build.{log,rpm.log.txt}
 
-      - name: Upload source RPM to github artifacts
-        uses: actions/upload-artifact@v4
+      - name: Upload RPM expanded specfile
+        uses: actions/upload-artifact@v7
         with:
-          name: RPM
-          retention-days: 1
-          path: ${{ github.workspace }}/output/rpm
+          retention-days: 30
+          archive: false
+          path: |
+            output/rpm/expanded-spec.txt
+
+      - name: Upload RPM build log
+        uses: actions/upload-artifact@v7
+        with:
+          retention-days: 30
+          archive: false
+          path: |
+            output/rpm/build.rpm.log.txt
+
+      - name: Upload RPM
+        uses: actions/upload-artifact@v7
+        with:
+          name: rpm
+          retention-days: 30
+          path: |
+            output/rpm
+
+      - name: Fedora review
+        run: |
+          make review
+
+      - name: Upload license check
+        uses: actions/upload-artifact@v7
+        with:
+          retention-days: 30
+          archive: false
+          path: |
+            output/review/licensecheck.txt
+
+      - name: Upload review file
+        uses: actions/upload-artifact@v7
+        with:
+          retention-days: 30
+          archive: false
+          path: |
+            output/review/review.txt
+
+      - name: Upload rpmlint
+        uses: actions/upload-artifact@v7
+        with:
+          retention-days: 30
+          archive: false
+          path: |
+            output/review/rpmlint.txt
+
+      - name: Upload full review
+        uses: actions/upload-artifact@v7
+        with:
+          name: review
+          retention-days: 30
+          path: |
+            output/review
 
 #  upload-srpm:
 #    name: Upload source RPM to Fedora Copr
