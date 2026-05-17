@@ -50,7 +50,7 @@ jobs:
           make rpm
 
       - name: Upload SRPM and RPM
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: srpm-rpm
           retention-days: 7
