@@ -37,7 +37,7 @@ jobs:
             make
 
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
         with:
           # fetch all history to make changelog
           fetch-depth: 0
@@ -48,7 +48,7 @@ jobs:
           mv output/srpm/build.{log,srpm.log.txt}
 
       - name: Upload SRPM build log
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           retention-days: 30
           archive: false
@@ -56,7 +56,7 @@ jobs:
             output/srpm/build.srpm.log.txt
 
       - name: Upload SRPM
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: srpm
           retention-days: 30
@@ -69,7 +69,7 @@ jobs:
           mv output/rpm/build.{log,rpm.log.txt}
 
       - name: Upload RPM expanded specfile
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           retention-days: 30
           archive: false
@@ -77,7 +77,7 @@ jobs:
             output/rpm/expanded-spec.txt
 
       - name: Upload RPM build log
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           retention-days: 30
           archive: false
@@ -85,7 +85,7 @@ jobs:
             output/rpm/build.rpm.log.txt
 
       - name: Upload RPM
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: rpm
           retention-days: 30
@@ -97,7 +97,7 @@ jobs:
           make review
 
       - name: Upload license check
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           retention-days: 30
           archive: false
@@ -105,7 +105,7 @@ jobs:
             output/review/licensecheck.txt
 
       - name: Upload review file
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           retention-days: 30
           archive: false
@@ -113,7 +113,7 @@ jobs:
             output/review/review.txt
 
       - name: Upload rpmlint
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           retention-days: 30
           archive: false
@@ -121,7 +121,7 @@ jobs:
             output/review/rpmlint.txt
 
       - name: Upload full review
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: review
           retention-days: 30
