@@ -8,8 +8,10 @@
   "packageRules": [
     {
       "matchDatasources": ["docker"],
-      "matchPackagePatterns": ["^fedora$"],
-      "enabled": false
+      "enabled": false,
+      "matchPackageNames": [
+        "/^fedora$/"
+      ]
     }
   ],
   "commitBody": "[skip changelog]",
